@@ -213,7 +213,7 @@ func (s *sessionImpl) GenerateKeyPair(request GenerateKeyPairRequest) (*KeyPair,
 	s.Lock()
 	defer s.Unlock()
 	pubHandle, privHandle, err := s.ctx.GenerateKeyPair(s.handle,
-		[]*pkcs11.Mechanism{&request.Mechanism},
+		&request.Mechanism,
 		request.PublicKeyAttributes,
 		request.PrivateKeyAttributes)
 	if err != nil {
