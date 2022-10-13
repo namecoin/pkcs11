@@ -178,7 +178,7 @@ func TestDigest(t *testing.T) {
 }
 
 func testDigest(t *testing.T, p *Ctx, session SessionHandle, input []byte, expected string) {
-	e := p.DigestInit(session, []*Mechanism{NewMechanism(CKM_SHA_1, nil)})
+	e := p.DigestInit(session, NewMechanism(CKM_SHA_1, nil))
 	if e != nil {
 		t.Fatalf("DigestInit: %s\n", e)
 	}
@@ -211,7 +211,7 @@ func TestDigestUpdate(t *testing.T) {
 }
 
 func testDigestUpdate(t *testing.T, p *Ctx, session SessionHandle, inputs [][]byte, expected string) {
-	if e := p.DigestInit(session, []*Mechanism{NewMechanism(CKM_SHA_1, nil)}); e != nil {
+	if e := p.DigestInit(session, NewMechanism(CKM_SHA_1, nil)); e != nil {
 		t.Fatalf("DigestInit: %s\n", e)
 	}
 	for _, input := range inputs {
@@ -274,7 +274,7 @@ func generateRSAKeyPair(t *testing.T, p *Ctx, session SessionHandle, tokenLabel 
 		NewAttribute(CKA_EXTRACTABLE, true),
 	}
 	pbk, pvk, e := p.GenerateKeyPair(session,
-		[]*Mechanism{NewMechanism(CKM_RSA_PKCS_KEY_PAIR_GEN, nil)},
+		NewMechanism(CKM_RSA_PKCS_KEY_PAIR_GEN, nil),
 		publicKeyTemplate, privateKeyTemplate)
 	if e != nil {
 		t.Fatalf("failed to generate keypair: %s\n", e)
@@ -299,7 +299,7 @@ func TestSign(t *testing.T) {
 	tokenLabel := "TestSign"
 	_, pvk := generateRSAKeyPair(t, p, session, tokenLabel, false)
 
-	p.SignInit(session, []*Mechanism{NewMechanism(CKM_SHA1_RSA_PKCS, nil)}, pvk)
+	p.SignInit(session, NewMechanism(CKM_SHA1_RSA_PKCS, nil), pvk)
 	_, e := p.Sign(session, []byte("Sign me!"))
 	if e != nil {
 		t.Fatalf("failed to sign: %s\n", e)
@@ -374,7 +374,7 @@ func TestSymmetricEncryption(t *testing.T) {
 		NewAttribute(CKA_VALUE_LEN, 16),
 	}
 	key, err := p.GenerateKey(session,
-		[]*Mechanism{NewMechanism(CKM_AES_KEY_GEN, nil)},
+		NewMechanism(CKM_AES_KEY_GEN, nil),
 		keyTemplate)
 	if err != nil {
 		t.Fatalf("failed to generate keypair: %s\n", err)
@@ -415,14 +415,14 @@ func TestSymmetricEncryption(t *testing.T) {
 
 func testEncrypt(t *testing.T, p *Ctx, session SessionHandle, key ObjectHandle, mech uint, plaintext []byte, iv []byte) {
 	var err error
-	if err = p.EncryptInit(session, []*Mechanism{NewMechanism(mech, iv)}, key); err != nil {
+	if err = p.EncryptInit(session, NewMechanism(mech, iv), key); err != nil {
 		t.Fatalf("EncryptInit: %s\n", err)
 	}
 	var ciphertext []byte
 	if ciphertext, err = p.Encrypt(session, plaintext); err != nil {
 		t.Fatalf("Encrypt: %s\n", err)
 	}
-	if err = p.DecryptInit(session, []*Mechanism{NewMechanism(mech, iv)}, key); err != nil {
+	if err = p.DecryptInit(session, NewMechanism(mech, iv), key); err != nil {
 		t.Fatalf("DecryptInit: %s\n", err)
 	}
 	var decrypted []byte
@@ -436,7 +436,7 @@ func testEncrypt(t *testing.T, p *Ctx, session SessionHandle, key ObjectHandle, 
 
 func testEncryptUpdate(t *testing.T, p *Ctx, session SessionHandle, key ObjectHandle, mech uint, plaintexts [][]byte, iv []byte) {
 	var err error
-	if err = p.EncryptInit(session, []*Mechanism{NewMechanism(mech, iv)}, key); err != nil {
+	if err = p.EncryptInit(session, NewMechanism(mech, iv), key); err != nil {
 		t.Fatalf("EncryptInit: %s\n", err)
 	}
 	var ciphertexts [][]byte
@@ -452,7 +452,7 @@ func testEncryptUpdate(t *testing.T, p *Ctx, session SessionHandle, key ObjectHa
 		t.Fatalf("EncryptFinal: %s\n", err)
 	}
 	ciphertexts = append(ciphertexts, output)
-	if err = p.DecryptInit(session, []*Mechanism{NewMechanism(mech, iv)}, key); err != nil {
+	if err = p.DecryptInit(session, NewMechanism(mech, iv), key); err != nil {
 		t.Fatalf("DecryptInit: %s\n", err)
 	}
 	var decrypted []byte
@@ -511,12 +511,12 @@ func ExampleCtx_Sign() {
 		NewAttribute(CKA_LABEL, "ExampleSign"),
 	}
 	_, priv, err := p.GenerateKeyPair(session,
-		[]*Mechanism{NewMechanism(CKM_RSA_PKCS_KEY_PAIR_GEN, nil)},
+		NewMechanism(CKM_RSA_PKCS_KEY_PAIR_GEN, nil),
 		publicKeyTemplate, privateKeyTemplate)
 	if err != nil {
 		log.Fatal(err)
 	}
-	p.SignInit(session, []*Mechanism{NewMechanism(CKM_SHA1_RSA_PKCS, nil)}, priv)
+	p.SignInit(session, NewMechanism(CKM_SHA1_RSA_PKCS, nil), priv)
 	// Sign something with the private key.
 	data := []byte("Lets sign this data")
 

@@ -273,11 +273,7 @@ func NewMechanism(mech uint, x interface{}) *Mechanism {
 	return m
 }
 
-func cMechanism(mechList []*Mechanism) (arena, *C.CK_MECHANISM) {
-	if len(mechList) != 1 {
-		panic("expected exactly one mechanism")
-	}
-	mech := mechList[0]
+func cMechanism(mech *Mechanism) (arena, *C.CK_MECHANISM) {
 	cmech := &C.CK_MECHANISM{mechanism: C.CK_MECHANISM_TYPE(mech.Mechanism)}
 	// params that contain pointers are allocated here
 	param := mech.Parameter

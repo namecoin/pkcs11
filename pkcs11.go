@@ -911,9 +911,9 @@ func (c *Ctx) GetMechanismList(slotID uint) ([]*Mechanism, error) {
 
 // GetMechanismInfo obtains information about a particular
 // mechanism possibly supported by a token.
-func (c *Ctx) GetMechanismInfo(slotID uint, m []*Mechanism) (MechanismInfo, error) {
+func (c *Ctx) GetMechanismInfo(slotID uint, m *Mechanism) (MechanismInfo, error) {
 	var cm C.CK_MECHANISM_INFO
-	e := C.GetMechanismInfo(c.ctx, C.CK_ULONG(slotID), C.CK_MECHANISM_TYPE(m[0].Mechanism),
+	e := C.GetMechanismInfo(c.ctx, C.CK_ULONG(slotID), C.CK_MECHANISM_TYPE(m.Mechanism),
 		C.CK_MECHANISM_INFO_PTR(&cm))
 	mi := MechanismInfo{
 		MinKeySize: uint(cm.ulMinKeySize),
@@ -1147,7 +1147,7 @@ func (c *Ctx) FindObjectsFinal(sh SessionHandle) error {
 }
 
 // EncryptInit initializes an encryption operation.
-func (c *Ctx) EncryptInit(sh SessionHandle, m []*Mechanism, o ObjectHandle) error {
+func (c *Ctx) EncryptInit(sh SessionHandle, m *Mechanism, o ObjectHandle) error {
 	arena, mech := cMechanism(m)
 	defer arena.Free()
 	e := C.EncryptInit(c.ctx, C.CK_SESSION_HANDLE(sh), mech, C.CK_OBJECT_HANDLE(o))
@@ -1200,7 +1200,7 @@ func (c *Ctx) EncryptFinal(sh SessionHandle) ([]byte, error) {
 }
 
 // DecryptInit initializes a decryption operation.
-func (c *Ctx) DecryptInit(sh SessionHandle, m []*Mechanism, o ObjectHandle) error {
+func (c *Ctx) DecryptInit(sh SessionHandle, m *Mechanism, o ObjectHandle) error {
 	arena, mech := cMechanism(m)
 	defer arena.Free()
 	e := C.DecryptInit(c.ctx, C.CK_SESSION_HANDLE(sh), mech, C.CK_OBJECT_HANDLE(o))
@@ -1253,7 +1253,7 @@ func (c *Ctx) DecryptFinal(sh SessionHandle) ([]byte, error) {
 }
 
 // DigestInit initializes a message-digesting operation.
-func (c *Ctx) DigestInit(sh SessionHandle, m []*Mechanism) error {
+func (c *Ctx) DigestInit(sh SessionHandle, m *Mechanism) error {
 	arena, mech := cMechanism(m)
 	defer arena.Free()
 	e := C.DigestInit(c.ctx, C.CK_SESSION_HANDLE(sh), mech)
@@ -1313,7 +1313,7 @@ func (c *Ctx) DigestFinal(sh SessionHandle) ([]byte, error) {
 // SignInit initializes a signature (private key encryption)
 // operation, where the signature is (will be) an appendix to
 // the data, and plaintext cannot be recovered from the signature.
-func (c *Ctx) SignInit(sh SessionHandle, m []*Mechanism, o ObjectHandle) error {
+func (c *Ctx) SignInit(sh SessionHandle, m *Mechanism, o ObjectHandle) error {
 	arena, mech := cMechanism(m)
 	defer arena.Free()
 	e := C.SignInit(c.ctx, C.CK_SESSION_HANDLE(sh), mech, C.CK_OBJECT_HANDLE(o))
@@ -1360,7 +1360,7 @@ func (c *Ctx) SignFinal(sh SessionHandle) ([]byte, error) {
 }
 
 // SignRecoverInit initializes a signature operation, where the data can be recovered from the signature.
-func (c *Ctx) SignRecoverInit(sh SessionHandle, m []*Mechanism, key ObjectHandle) error {
+func (c *Ctx) SignRecoverInit(sh SessionHandle, m *Mechanism, key ObjectHandle) error {
 	arena, mech := cMechanism(m)
 	defer arena.Free()
 	e := C.SignRecoverInit(c.ctx, C.CK_SESSION_HANDLE(sh), mech, C.CK_OBJECT_HANDLE(key))
@@ -1385,7 +1385,7 @@ func (c *Ctx) SignRecover(sh SessionHandle, data []byte) ([]byte, error) {
 // VerifyInit initializes a verification operation, where the
 // signature is an appendix to the data, and plaintext cannot
 // be recovered from the signature (e.g. DSA).
-func (c *Ctx) VerifyInit(sh SessionHandle, m []*Mechanism, key ObjectHandle) error {
+func (c *Ctx) VerifyInit(sh SessionHandle, m *Mechanism, key ObjectHandle) error {
 	arena, mech := cMechanism(m)
 	defer arena.Free()
 	e := C.VerifyInit(c.ctx, C.CK_SESSION_HANDLE(sh), mech, C.CK_OBJECT_HANDLE(key))
@@ -1417,7 +1417,7 @@ func (c *Ctx) VerifyFinal(sh SessionHandle, signature []byte) error {
 
 // VerifyRecoverInit initializes a signature verification
 // operation, where the data is recovered from the signature.
-func (c *Ctx) VerifyRecoverInit(sh SessionHandle, m []*Mechanism, key ObjectHandle) error {
+func (c *Ctx) VerifyRecoverInit(sh SessionHandle, m *Mechanism, key ObjectHandle) error {
 	arena, mech := cMechanism(m)
 	defer arena.Free()
 	e := C.VerifyRecoverInit(c.ctx, C.CK_SESSION_HANDLE(sh), mech, C.CK_OBJECT_HANDLE(key))
@@ -1501,7 +1501,7 @@ func (c *Ctx) DecryptVerifyUpdate(sh SessionHandle, cipher []byte) ([]byte, erro
 }
 
 // GenerateKey generates a secret key, creating a new key object.
-func (c *Ctx) GenerateKey(sh SessionHandle, m []*Mechanism, temp []*Attribute) (ObjectHandle, error) {
+func (c *Ctx) GenerateKey(sh SessionHandle, m *Mechanism, temp []*Attribute) (ObjectHandle, error) {
 	var key C.CK_OBJECT_HANDLE
 	attrarena, t, tcount := cAttributeList(temp)
 	defer attrarena.Free()
@@ -1516,7 +1516,7 @@ func (c *Ctx) GenerateKey(sh SessionHandle, m []*Mechanism, temp []*Attribute) (
 }
 
 // GenerateKeyPair generates a public-key/private-key pair creating new key objects.
-func (c *Ctx) GenerateKeyPair(sh SessionHandle, m []*Mechanism, public, private []*Attribute) (ObjectHandle, ObjectHandle, error) {
+func (c *Ctx) GenerateKeyPair(sh SessionHandle, m *Mechanism, public, private []*Attribute) (ObjectHandle, ObjectHandle, error) {
 	var (
 		pubkey  C.CK_OBJECT_HANDLE
 		privkey C.CK_OBJECT_HANDLE
@@ -1536,7 +1536,7 @@ func (c *Ctx) GenerateKeyPair(sh SessionHandle, m []*Mechanism, public, private 
 }
 
 // WrapKey wraps (i.e., encrypts) a key.
-func (c *Ctx) WrapKey(sh SessionHandle, m []*Mechanism, wrappingkey, key ObjectHandle) ([]byte, error) {
+func (c *Ctx) WrapKey(sh SessionHandle, m *Mechanism, wrappingkey, key ObjectHandle) ([]byte, error) {
 	var (
 		wrappedkey    C.CK_BYTE_PTR
 		wrappedkeylen C.CK_ULONG
@@ -1553,7 +1553,7 @@ func (c *Ctx) WrapKey(sh SessionHandle, m []*Mechanism, wrappingkey, key ObjectH
 }
 
 // UnwrapKey unwraps (decrypts) a wrapped key, creating a new key object.
-func (c *Ctx) UnwrapKey(sh SessionHandle, m []*Mechanism, unwrappingkey ObjectHandle, wrappedkey []byte, a []*Attribute) (ObjectHandle, error) {
+func (c *Ctx) UnwrapKey(sh SessionHandle, m *Mechanism, unwrappingkey ObjectHandle, wrappedkey []byte, a []*Attribute) (ObjectHandle, error) {
 	var key C.CK_OBJECT_HANDLE
 	attrarena, ac, aclen := cAttributeList(a)
 	defer attrarena.Free()
@@ -1564,7 +1564,7 @@ func (c *Ctx) UnwrapKey(sh SessionHandle, m []*Mechanism, unwrappingkey ObjectHa
 }
 
 // DeriveKey derives a key from a base key, creating a new key object.
-func (c *Ctx) DeriveKey(sh SessionHandle, m []*Mechanism, basekey ObjectHandle, a []*Attribute) (ObjectHandle, error) {
+func (c *Ctx) DeriveKey(sh SessionHandle, m *Mechanism, basekey ObjectHandle, a []*Attribute) (ObjectHandle, error) {
 	var key C.CK_OBJECT_HANDLE
 	attrarena, ac, aclen := cAttributeList(a)
 	defer attrarena.Free()
