@@ -14,7 +14,7 @@ func (secret SecretKey) Encrypt(mechanism pkcs11.Mechanism, plaintext []byte) ([
 	s := secret.session
 	s.Lock()
 	defer s.Unlock()
-	err := s.ctx.EncryptInit(s.handle, []*pkcs11.Mechanism{&mechanism}, secret.objectHandle)
+	err := s.ctx.EncryptInit(s.handle, &mechanism, secret.objectHandle)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +30,7 @@ func (secret SecretKey) Decrypt(mechanism pkcs11.Mechanism, ciphertext []byte) (
 	s := secret.session
 	s.Lock()
 	defer s.Unlock()
-	err := s.ctx.DecryptInit(s.handle, []*pkcs11.Mechanism{&mechanism}, secret.objectHandle)
+	err := s.ctx.DecryptInit(s.handle, &mechanism, secret.objectHandle)
 	if err != nil {
 		return nil, err
 	}

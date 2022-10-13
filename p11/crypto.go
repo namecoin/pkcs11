@@ -19,7 +19,7 @@ func (priv PrivateKey) Decrypt(mechanism pkcs11.Mechanism, ciphertext []byte) ([
 	s := priv.session
 	s.Lock()
 	defer s.Unlock()
-	err := s.ctx.DecryptInit(s.handle, []*pkcs11.Mechanism{&mechanism}, priv.objectHandle)
+	err := s.ctx.DecryptInit(s.handle, &mechanism, priv.objectHandle)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func (priv PrivateKey) Sign(mechanism pkcs11.Mechanism, message []byte) ([]byte,
 	s := priv.session
 	s.Lock()
 	defer s.Unlock()
-	err := s.ctx.SignInit(s.handle, []*pkcs11.Mechanism{&mechanism}, priv.objectHandle)
+	err := s.ctx.SignInit(s.handle, &mechanism, priv.objectHandle)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (priv PrivateKey) deriveInner(mechanism pkcs11.Mechanism, attributes []*pkc
 	s := priv.session
 	s.Lock()
 	defer s.Unlock()
-	objectHandle, err := s.ctx.DeriveKey(s.handle, []*pkcs11.Mechanism{&mechanism}, priv.objectHandle, attributes)
+	objectHandle, err := s.ctx.DeriveKey(s.handle, &mechanism, priv.objectHandle, attributes)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (pub PublicKey) Verify(mechanism pkcs11.Mechanism, message, signature []byt
 	s := pub.session
 	s.Lock()
 	defer s.Unlock()
-	err := s.ctx.VerifyInit(s.handle, []*pkcs11.Mechanism{&mechanism}, pub.objectHandle)
+	err := s.ctx.VerifyInit(s.handle, &mechanism, pub.objectHandle)
 	if err != nil {
 		return err
 	}
@@ -98,7 +98,7 @@ func (pub PublicKey) Encrypt(mechanism pkcs11.Mechanism, plaintext []byte) ([]by
 	s := pub.session
 	s.Lock()
 	defer s.Unlock()
-	err := s.ctx.EncryptInit(s.handle, []*pkcs11.Mechanism{&mechanism}, pub.objectHandle)
+	err := s.ctx.EncryptInit(s.handle, &mechanism, pub.objectHandle)
 	if err != nil {
 		return nil, err
 	}

@@ -134,7 +134,7 @@ func makeSigner(context *Ctx) (*signer, error) {
 }
 
 func (s *signer) sign(input []byte) ([]byte, error) {
-	mechanism := []*Mechanism{NewMechanism(CKM_RSA_PKCS, nil)}
+	mechanism := NewMechanism(CKM_RSA_PKCS, nil)
 	if err := s.context.SignInit(s.session, mechanism, s.privateKey); err != nil {
 		log.Fatalf("SignInit: %s", err)
 	}

@@ -16,7 +16,7 @@ func needMech(t *testing.T, p *Ctx, sh SessionHandle, mech uint) {
 	if err != nil {
 		t.Fatal("GetSlotList:", err)
 	}
-	_, err = p.GetMechanismInfo(slots[0], []*Mechanism{NewMechanism(mech, nil)})
+	_, err = p.GetMechanismInfo(slots[0], NewMechanism(mech, nil))
 	if err == nil {
 		return
 	}
@@ -67,7 +67,7 @@ func TestPSSParams(t *testing.T) {
 
 	sum := []byte("1234567890abcdef1234567890abcdef")
 	params := NewPSSParams(CKM_SHA256, CKG_MGF1_SHA256, 32)
-	mech := []*Mechanism{NewMechanism(CKM_RSA_PKCS_PSS, params)}
+	mech := NewMechanism(CKM_RSA_PKCS_PSS, params)
 	if err := p.SignInit(sh, mech, priv); err != nil {
 		t.Fatal("SignInit:", err)
 	}
@@ -92,7 +92,7 @@ func TestOAEPParams(t *testing.T) {
 
 	msg := []byte("1234567890abcdef1234567890abcdef")
 	params := NewOAEPParams(CKM_SHA_1, CKG_MGF1_SHA1, CKZ_DATA_SPECIFIED, nil)
-	mech := []*Mechanism{NewMechanism(CKM_RSA_PKCS_OAEP, params)}
+	mech := NewMechanism(CKM_RSA_PKCS_OAEP, params)
 	if err := p.EncryptInit(sh, mech, pub); err != nil {
 		t.Fatal("EncryptInit:", err)
 	}
@@ -118,7 +118,7 @@ func TestGCMParams(t *testing.T) {
 	defer finishSession(p, sh)
 	needMech(t, p, sh, CKM_AES_GCM)
 
-	key, err := p.GenerateKey(sh, []*Mechanism{NewMechanism(CKM_AES_KEY_GEN, nil)}, []*Attribute{
+	key, err := p.GenerateKey(sh, NewMechanism(CKM_AES_KEY_GEN, nil), []*Attribute{
 		NewAttribute(CKA_TOKEN, false),
 		NewAttribute(CKA_DECRYPT, true),
 		NewAttribute(CKA_ENCRYPT, true),
@@ -132,7 +132,7 @@ func TestGCMParams(t *testing.T) {
 	msg := []byte("1234567890abcdef1234567890abcdef")
 	params := NewGCMParams(iv, nil, 128)
 	defer params.Free()
-	if err := p.EncryptInit(sh, []*Mechanism{NewMechanism(CKM_AES_GCM, params)}, key); err != nil {
+	if err := p.EncryptInit(sh, NewMechanism(CKM_AES_GCM, params), key); err != nil {
 		t.Fatal("EncryptInit:", err)
 	}
 	ciphertext, err := p.Encrypt(sh, msg)
@@ -144,7 +144,7 @@ func TestGCMParams(t *testing.T) {
 
 	params = NewGCMParams(iv, nil, 128)
 	defer params.Free()
-	if err := p.DecryptInit(sh, []*Mechanism{NewMechanism(CKM_AES_GCM, params)}, key); err != nil {
+	if err := p.DecryptInit(sh, NewMechanism(CKM_AES_GCM, params), key); err != nil {
 		t.Fatal("DecryptInit:", err)
 	}
 	msg2, err := p.Decrypt(sh, ciphertext)

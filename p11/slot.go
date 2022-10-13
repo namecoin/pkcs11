@@ -103,5 +103,5 @@ func (m *Mechanism) Parameter() []byte {
 
 // Info returns information about this mechanism.
 func (m *Mechanism) Info() (pkcs11.MechanismInfo, error) {
-	return m.slot.ctx.GetMechanismInfo(m.slot.id, []*pkcs11.Mechanism{m.mechanism})
+	return m.slot.ctx.GetMechanismInfo(m.slot.id, m.mechanism)
 }
