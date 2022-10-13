@@ -220,11 +220,11 @@ func (s *sessionImpl) GenerateKeyPair(request GenerateKeyPairRequest) (*KeyPair,
 		return nil, err
 	}
 	return &KeyPair{
-		Public: PublicKey(Object{
+		Public: publicKeyImpl(objectImpl{
 			session:      s,
 			objectHandle: pubHandle,
 		}),
-		Private: PrivateKey(Object{
+		Private: privateKeyImpl(objectImpl{
 			session:      s,
 			objectHandle: privHandle,
 		}),
