@@ -7,7 +7,7 @@ import "github.com/miekg/pkcs11"
 // actually a secret key. For instance, if you use a FindObjects template that
 // includes CKA_CLASS: CKO_SECRET_KEY, you can be confident the resulting object
 // is a secret key.
-type SecretKey Object
+type SecretKey objectImpl
 
 // Encrypt encrypts a plaintext with a given mechanism.
 func (secret SecretKey) Encrypt(mechanism pkcs11.Mechanism, plaintext []byte) ([]byte, error) {
