@@ -89,7 +89,7 @@ func getPrivateKey(context *Ctx, session SessionHandle, label string) (ObjectHan
 	if err := context.FindObjectsInit(session, template); err != nil {
 		return noKey, err
 	}
-	objs, _, err := context.FindObjects(session, 2)
+	objs, err := context.FindObjects(session, 2)
 	if err != nil {
 		return noKey, err
 	}

@@ -35,7 +35,7 @@ func findObject(t *testing.T, p *Ctx, sh SessionHandle, class uint, label string
 	if err := p.FindObjectsInit(sh, template); err != nil {
 		t.Fatal("FindObjectsInit:", err)
 	}
-	obj, _, err := p.FindObjects(sh, 1)
+	obj, err := p.FindObjects(sh, 1)
 	if err != nil {
 		t.Fatal("FindObjects:", err)
 	}
