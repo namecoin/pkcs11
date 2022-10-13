@@ -86,30 +86,37 @@ func OpenModule(path string) (Module, error) {
 
 	newCtx := pkcs11.New(path)
 	if newCtx == nil {
-		return Module{}, fmt.Errorf("failed to load module %q", path)
+		return moduleImpl{}, fmt.Errorf("failed to load module %q", path)
 	}
 
 	err := newCtx.Initialize()
 	if err != nil {
-		return Module{}, fmt.Errorf("failed to initialize module: %s", err)
+		return moduleImpl{}, fmt.Errorf("failed to initialize module: %s", err)
 	}
 
-	modules[path] = Module{newCtx}
+	modules[path] = moduleImpl{newCtx}
 	return modules[path], nil
 }
 
 // Module represents a PKCS#11 module, and can be used to create Sessions.
-type Module struct {
+type Module interface {
+	Destroy()
+	Info() (pkcs11.Info, error)
+	Slots() ([]Slot, error)
+}
+
+// moduleImpl represents a PKCS#11 module, and can be used to create Sessions.
+type moduleImpl struct {
 	ctx pkcs11.Ctx
 }
 
 // Info returns general information about the module.
-func (m Module) Info() (pkcs11.Info, error) {
+func (m moduleImpl) Info() (pkcs11.Info, error) {
 	return m.ctx.GetInfo()
 }
 
 // Slots returns all available Slots that have a token present.
-func (m Module) Slots() ([]Slot, error) {
+func (m moduleImpl) Slots() ([]Slot, error) {
 	ids, err := m.ctx.GetSlotList(true)
 	if err != nil {
 		return nil, err
@@ -125,6 +132,6 @@ func (m Module) Slots() ([]Slot, error) {
 }
 
 // Destroy unloads the module/library.
-func (m Module) Destroy() {
+func (m moduleImpl) Destroy() {
 	m.ctx.Destroy()
 }
