@@ -70,7 +70,7 @@ func (s slotImpl) Mechanisms() ([]Mechanism, error) {
 	}
 	result := make([]Mechanism, len(list))
 	for i, mech := range list {
-		result[i] = mechanismImpl{
+		result[i] = &mechanismImpl{
 			mechanism: mech,
 			slot:      s,
 		}
