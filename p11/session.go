@@ -58,7 +58,7 @@ type Session interface {
 
 type sessionImpl struct {
 	sync.Mutex
-	ctx    *pkcs11.Ctx
+	ctx    pkcs11.Ctx
 	handle pkcs11.SessionHandle
 }
 

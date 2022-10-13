@@ -48,7 +48,7 @@ func init() {
 	os.Setenv("SOFTHSM2_CONF", wd+"/softhsm2.conf")
 }
 
-func initPKCS11Context(modulePath string) (*Ctx, error) {
+func initPKCS11Context(modulePath string) (Ctx, error) {
 	context := New(modulePath)
 
 	if context == nil {
@@ -59,7 +59,7 @@ func initPKCS11Context(modulePath string) (*Ctx, error) {
 	return context, err
 }
 
-func getSlot(p *Ctx, label string) (uint, error) {
+func getSlot(p Ctx, label string) (uint, error) {
 	slots, err := p.GetSlotList(true)
 	if err != nil {
 		return 0, err
@@ -80,7 +80,7 @@ func getSlot(p *Ctx, label string) (uint, error) {
 	return 0, fmt.Errorf("Slot not found: %s", label)
 }
 
-func getPrivateKey(context *Ctx, session SessionHandle, label string) (ObjectHandle, error) {
+func getPrivateKey(context Ctx, session SessionHandle, label string) (ObjectHandle, error) {
 	var noKey ObjectHandle
 	template := []*Attribute{
 		NewAttribute(CKA_CLASS, CKO_PRIVATE_KEY),
@@ -105,12 +105,12 @@ func getPrivateKey(context *Ctx, session SessionHandle, label string) (ObjectHan
 }
 
 type signer struct {
-	context    *Ctx
+	context    Ctx
 	session    SessionHandle
 	privateKey ObjectHandle
 }
 
-func makeSigner(context *Ctx) (*signer, error) {
+func makeSigner(context Ctx) (*signer, error) {
 	slot, err := getSlot(context, tokenLabel)
 	if err != nil {
 		return nil, err
