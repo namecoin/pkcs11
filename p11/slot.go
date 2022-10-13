@@ -4,7 +4,7 @@ import "github.com/miekg/pkcs11"
 
 // Slot represents a slot that may hold a token.
 type Slot struct {
-	ctx *pkcs11.Ctx
+	ctx pkcs11.Ctx
 	id  uint
 }
 
