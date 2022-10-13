@@ -100,7 +100,7 @@ func OpenModule(path string) (Module, error) {
 
 // Module represents a PKCS#11 module, and can be used to create Sessions.
 type Module struct {
-	ctx *pkcs11.Ctx
+	ctx pkcs11.Ctx
 }
 
 // Info returns general information about the module.

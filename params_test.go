@@ -11,7 +11,7 @@ import (
 const notFound = 0xffffffff
 
 // test whether mech is available; skip the test if it isn't
-func needMech(t *testing.T, p *Ctx, sh SessionHandle, mech uint) {
+func needMech(t *testing.T, p Ctx, sh SessionHandle, mech uint) {
 	slots, err := p.GetSlotList(true)
 	if err != nil {
 		t.Fatal("GetSlotList:", err)
@@ -27,7 +27,7 @@ func needMech(t *testing.T, p *Ctx, sh SessionHandle, mech uint) {
 	t.Skipf("skipping test; mech 0x%X not supported by softhsm", mech)
 }
 
-func findObject(t *testing.T, p *Ctx, sh SessionHandle, class uint, label string) ObjectHandle {
+func findObject(t *testing.T, p Ctx, sh SessionHandle, class uint, label string) ObjectHandle {
 	template := []*Attribute{
 		NewAttribute(CKA_CLASS, class),
 		NewAttribute(CKA_LABEL, label),
@@ -49,7 +49,7 @@ func findObject(t *testing.T, p *Ctx, sh SessionHandle, class uint, label string
 }
 
 // generate a rsa key if it doesn't exist
-func getRSA(t *testing.T, p *Ctx, sh SessionHandle) (pub, priv ObjectHandle) {
+func getRSA(t *testing.T, p Ctx, sh SessionHandle) (pub, priv ObjectHandle) {
 	pub = findObject(t, p, sh, CKO_PUBLIC_KEY, "paramstest")
 	priv = findObject(t, p, sh, CKO_PUBLIC_KEY, "paramstest")
 	if pub == notFound || priv == notFound {

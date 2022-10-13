@@ -26,7 +26,7 @@ This test supports the following environment variables:
 
 var lib = "/usr/lib/softhsm/libsofthsm2.so"
 
-func setenv(t *testing.T) *Ctx {
+func setenv(t *testing.T) Ctx {
 	if x := os.Getenv("SOFTHSM_LIB"); x != "" {
 		lib = x
 	}
@@ -53,7 +53,7 @@ func TestSetenv(t *testing.T) {
 	return
 }
 
-func getSession(p *Ctx, t *testing.T) SessionHandle {
+func getSession(p Ctx, t *testing.T) SessionHandle {
 	if e := p.Initialize(); e != nil {
 		t.Fatalf("init error %s\n", e)
 	}
@@ -89,7 +89,7 @@ func TestNew(t *testing.T) {
 	}
 }
 
-func finishSession(p *Ctx, session SessionHandle) {
+func finishSession(p Ctx, session SessionHandle) {
 	p.Logout(session)
 	p.CloseSession(session)
 	p.Finalize()
@@ -177,7 +177,7 @@ func TestDigest(t *testing.T) {
 	})
 }
 
-func testDigest(t *testing.T, p *Ctx, session SessionHandle, input []byte, expected string) {
+func testDigest(t *testing.T, p Ctx, session SessionHandle, input []byte, expected string) {
 	e := p.DigestInit(session, NewMechanism(CKM_SHA_1, nil))
 	if e != nil {
 		t.Fatalf("DigestInit: %s\n", e)
@@ -210,7 +210,7 @@ func TestDigestUpdate(t *testing.T) {
 	})
 }
 
-func testDigestUpdate(t *testing.T, p *Ctx, session SessionHandle, inputs [][]byte, expected string) {
+func testDigestUpdate(t *testing.T, p Ctx, session SessionHandle, inputs [][]byte, expected string) {
 	if e := p.DigestInit(session, NewMechanism(CKM_SHA_1, nil)); e != nil {
 		t.Fatalf("DigestInit: %s\n", e)
 	}
@@ -245,7 +245,7 @@ Inputs: test object
 Outputs: creates persistent or ephemeral tokens within the HSM.
 Returns: object handles for public and private keys. Fatal on error.
 */
-func generateRSAKeyPair(t *testing.T, p *Ctx, session SessionHandle, tokenLabel string, tokenPersistent bool) (ObjectHandle, ObjectHandle) {
+func generateRSAKeyPair(t *testing.T, p Ctx, session SessionHandle, tokenLabel string, tokenPersistent bool) (ObjectHandle, ObjectHandle) {
 	/*
 		inputs: test object, context, session handle
 			tokenLabel: string to set as the token labels
@@ -315,7 +315,7 @@ Inputs: test handle
 Outputs: removes object from HSM
 Returns: Fatal error on failure.
 */
-func destroyObject(t *testing.T, p *Ctx, session SessionHandle, searchToken string, class uint) (err error) {
+func destroyObject(t *testing.T, p Ctx, session SessionHandle, searchToken string, class uint) (err error) {
 	template := []*Attribute{
 		NewAttribute(CKA_LABEL, searchToken),
 		NewAttribute(CKA_CLASS, class)}
@@ -413,7 +413,7 @@ func TestSymmetricEncryption(t *testing.T) {
 	})
 }
 
-func testEncrypt(t *testing.T, p *Ctx, session SessionHandle, key ObjectHandle, mech uint, plaintext []byte, iv []byte) {
+func testEncrypt(t *testing.T, p Ctx, session SessionHandle, key ObjectHandle, mech uint, plaintext []byte, iv []byte) {
 	var err error
 	if err = p.EncryptInit(session, NewMechanism(mech, iv), key); err != nil {
 		t.Fatalf("EncryptInit: %s\n", err)
@@ -434,7 +434,7 @@ func testEncrypt(t *testing.T, p *Ctx, session SessionHandle, key ObjectHandle, 
 	}
 }
 
-func testEncryptUpdate(t *testing.T, p *Ctx, session SessionHandle, key ObjectHandle, mech uint, plaintexts [][]byte, iv []byte) {
+func testEncryptUpdate(t *testing.T, p Ctx, session SessionHandle, key ObjectHandle, mech uint, plaintexts [][]byte, iv []byte) {
 	var err error
 	if err = p.EncryptInit(session, NewMechanism(mech, iv), key); err != nil {
 		t.Fatalf("EncryptInit: %s\n", err)
