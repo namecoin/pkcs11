@@ -9,15 +9,15 @@ import "github.com/miekg/pkcs11"
 // is a public key.
 type PublicKey interface {
 	Encrypt(mechanism pkcs11.Mechanism, plaintext []byte) ([]byte, error)
-	Verify(mechanism pkcs11.Mechanism, message, signature []byte)
+	Verify(mechanism pkcs11.Mechanism, message, signature []byte) error
 }
 
 // PrivateKey is an Object representing a private key. Since any object can be cast to a
 // PrivateKey, it is the user's responsibility to ensure that the object is
 // actually a private key.
 type PrivateKey interface {
-	Decrypt(mechanism pkcs11.Mechanism, ciphertext []byte)
-	Sign(mechanism pkcs11.Mechanism, message []byte)
+	Decrypt(mechanism pkcs11.Mechanism, ciphertext []byte) ([]byte, error)
+	Sign(mechanism pkcs11.Mechanism, message []byte) ([]byte, error)
 	Derive(mechanism pkcs11.Mechanism, attributes []*pkcs11.Attribute) ([]byte, error)
 }
 
