@@ -113,7 +113,7 @@ func (s *sessionImpl) FindObjects(template []*pkcs11.Attribute) ([]Object, error
 
 	var results []Object
 	for {
-		objectHandles, _, err := s.ctx.FindObjects(s.handle, 100)
+		objectHandles, err := s.ctx.FindObjects(s.handle, 100)
 		if err != nil {
 			_ = s.ctx.FindObjectsFinal(s.handle)
 			return nil, err

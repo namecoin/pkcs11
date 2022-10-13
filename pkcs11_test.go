@@ -124,7 +124,7 @@ func TestFindObject(t *testing.T) {
 	if e := p.FindObjectsInit(session, template); e != nil {
 		t.Fatalf("failed to init: %s\n", e)
 	}
-	obj, _, e := p.FindObjects(session, 2)
+	obj, e := p.FindObjects(session, 2)
 	if e != nil {
 		t.Fatalf("failed to find: %s\n", e)
 	}
@@ -323,7 +323,7 @@ func destroyObject(t *testing.T, p *Ctx, session SessionHandle, searchToken stri
 	if e := p.FindObjectsInit(session, template); e != nil {
 		t.Fatalf("failed to init: %s\n", e)
 	}
-	obj, _, e := p.FindObjects(session, 1)
+	obj, e := p.FindObjects(session, 1)
 	if e != nil || len(obj) == 0 {
 		t.Fatalf("failed to find objects")
 	}

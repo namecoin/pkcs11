@@ -1121,16 +1121,14 @@ func (c *Ctx) FindObjectsInit(sh SessionHandle, temp []*Attribute) error {
 // objects that match a template, obtaining additional object
 // handles. Calling the function repeatedly may yield additional results until
 // an empty slice is returned.
-//
-// The returned boolean value is deprecated and should be ignored.
-func (c *Ctx) FindObjects(sh SessionHandle, max int) ([]ObjectHandle, bool, error) {
+func (c *Ctx) FindObjects(sh SessionHandle, max int) ([]ObjectHandle, error) {
 	var (
 		objectList C.CK_OBJECT_HANDLE_PTR
 		ulCount    C.CK_ULONG
 	)
 	e := C.FindObjects(c.ctx, C.CK_SESSION_HANDLE(sh), &objectList, C.CK_ULONG(max), &ulCount)
 	if toError(e) != nil {
-		return nil, false, toError(e)
+		return nil, toError(e)
 	}
 	l := toList(C.CK_ULONG_PTR(unsafe.Pointer(objectList)), ulCount)
 	// Make again a new list of the correct type.
@@ -1139,7 +1137,7 @@ func (c *Ctx) FindObjects(sh SessionHandle, max int) ([]ObjectHandle, bool, erro
 	for i, v := range l {
 		o[i] = ObjectHandle(v)
 	}
-	return o, ulCount > C.CK_ULONG(max), nil
+	return o, nil
 }
 
 // FindObjectsFinal finishes a search for token and session objects.
