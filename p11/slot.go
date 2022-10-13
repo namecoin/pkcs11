@@ -99,22 +99,30 @@ func (s slotImpl) ID() uint {
 
 // Mechanism represents a cipher, signature algorithm, hash function, or other
 // function that a token can perform.
-type Mechanism struct {
+type Mechanism interface {
+	Type() uint
+	Parameter() []byte
+	Info() (pkcs11.MechanismInfo, error)
+}
+
+// mechanismImpl represents a cipher, signature algorithm, hash function, or other
+// function that a token can perform.
+type mechanismImpl struct {
 	mechanism *pkcs11.Mechanism
-	slot      Slot
+	slot      slotImpl
 }
 
 // Type returns the type of mechanism.
-func (m *Mechanism) Type() uint {
+func (m *mechanismImpl) Type() uint {
 	return m.mechanism.Mechanism
 }
 
 // Parameter returns any parameters required by the mechanism.
-func (m *Mechanism) Parameter() []byte {
+func (m *mechanismImpl) Parameter() []byte {
 	return m.mechanism.Parameter
 }
 
 // Info returns information about this mechanism.
-func (m *Mechanism) Info() (pkcs11.MechanismInfo, error) {
+func (m *mechanismImpl) Info() (pkcs11.MechanismInfo, error) {
 	return m.slot.ctx.GetMechanismInfo(m.slot.id, m.mechanism)
 }
