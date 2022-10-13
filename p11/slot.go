@@ -3,28 +3,41 @@ package p11
 import "github.com/miekg/pkcs11"
 
 // Slot represents a slot that may hold a token.
-type Slot struct {
+type Slot interface {
+	CloseAllSessions() error
+	ID() uint
+	Info() (pkcs11.SlotInfo, error)
+	InitToken(securityOfficerPIN string, tokenLabel string) error
+	Mechanisms() ([]Mechanism, error)
+	OpenSession() (Session, error)
+	OpenSessionWithFlags(flags uint) (Session, error)
+	OpenWriteSession() (Session, error)
+	TokenInfo() (pkcs11.TokenInfo, error)
+}
+
+// slotImpl represents a slot that may hold a token.
+type slotImpl struct {
 	ctx pkcs11.Ctx
 	id  uint
 }
 
 // Info returns information about the Slot.
-func (s Slot) Info() (pkcs11.SlotInfo, error) {
+func (s slotImpl) Info() (pkcs11.SlotInfo, error) {
 	return s.ctx.GetSlotInfo(s.id)
 }
 
 // TokenInfo returns information about the token in a Slot, if applicable.
-func (s Slot) TokenInfo() (pkcs11.TokenInfo, error) {
+func (s slotImpl) TokenInfo() (pkcs11.TokenInfo, error) {
 	return s.ctx.GetTokenInfo(s.id)
 }
 
 // OpenSession opens a read-only session with the token in this slot.
-func (s Slot) OpenSession() (Session, error) {
+func (s slotImpl) OpenSession() (Session, error) {
 	return s.OpenSessionWithFlags(0)
 }
 
 // OpenWriteSession opens a read-write session with the token in this slot.
-func (s Slot) OpenWriteSession() (Session, error) {
+func (s slotImpl) OpenWriteSession() (Session, error) {
 	return s.OpenSessionWithFlags(pkcs11.CKF_RW_SESSION)
 }
 
@@ -32,7 +45,7 @@ func (s Slot) OpenWriteSession() (Session, error) {
 // token in this slot.
 // CKF_SERIAL_SESSION is always mandatory (per PKCS#11) for legacy reasons and
 // is internally added before opening a session.
-func (s Slot) OpenSessionWithFlags(flags uint) (Session, error) {
+func (s slotImpl) OpenSessionWithFlags(flags uint) (Session, error) {
 	handle, err := s.ctx.OpenSession(s.id, flags|pkcs11.CKF_SERIAL_SESSION)
 	if err != nil {
 		return nil, err
@@ -44,13 +57,13 @@ func (s Slot) OpenSessionWithFlags(flags uint) (Session, error) {
 }
 
 // CloseAllSessions closes all sessions on this slot.
-func (s Slot) CloseAllSessions() error {
+func (s slotImpl) CloseAllSessions() error {
 	return s.ctx.CloseAllSessions(s.id)
 }
 
 // Mechanisms returns a list of Mechanisms available on the token in this
 // slot.
-func (s Slot) Mechanisms() ([]Mechanism, error) {
+func (s slotImpl) Mechanisms() ([]Mechanism, error) {
 	list, err := s.ctx.GetMechanismList(s.id)
 	if err != nil {
 		return nil, err
@@ -75,12 +88,12 @@ func (s Slot) Mechanisms() ([]Mechanism, error) {
 // destroyed are destroyed (i.e., all except for 'indestructible' objects such
 // as keys built into the token). Also, access by the normal user is disabled
 // until the SO sets the normal user’s PIN."
-func (s Slot) InitToken(securityOfficerPIN string, tokenLabel string) error {
+func (s slotImpl) InitToken(securityOfficerPIN string, tokenLabel string) error {
 	return s.ctx.InitToken(s.id, securityOfficerPIN, tokenLabel)
 }
 
 // ID returns the slot's ID.
-func (s Slot) ID() uint {
+func (s slotImpl) ID() uint {
 	return s.id
 }
 
