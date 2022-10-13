@@ -65,25 +65,25 @@ type sessionImpl struct {
 func (s *sessionImpl) FindPrivateKey(label string) (PrivateKey, error) {
 	obj, err := s.findObjectWithClassAndLabel(pkcs11.CKO_PRIVATE_KEY, label)
 	if err != nil {
-		return PrivateKey(obj), err
+		return obj.(PrivateKey), err
 	}
-	return PrivateKey(obj), nil
+	return obj.(PrivateKey), nil
 }
 
 func (s *sessionImpl) FindPublicKey(label string) (PublicKey, error) {
 	obj, err := s.findObjectWithClassAndLabel(pkcs11.CKO_PUBLIC_KEY, label)
 	if err != nil {
-		return PublicKey(obj), err
+		return obj.(PublicKey), err
 	}
-	return PublicKey(obj), nil
+	return obj.(PublicKey), nil
 }
 
 func (s *sessionImpl) FindSecretKey(label string) (SecretKey, error) {
 	obj, err := s.findObjectWithClassAndLabel(pkcs11.CKO_SECRET_KEY, label)
 	if err != nil {
-		return SecretKey(obj), err
+		return obj.(SecretKey), err
 	}
-	return SecretKey(obj), nil
+	return obj.(SecretKey), nil
 }
 
 func (s *sessionImpl) findObjectWithClassAndLabel(class uint, label string) (Object, error) {
@@ -96,10 +96,10 @@ func (s *sessionImpl) findObjectWithClassAndLabel(class uint, label string) (Obj
 func (s *sessionImpl) FindObject(template []*pkcs11.Attribute) (Object, error) {
 	objects, err := s.FindObjects(template)
 	if err != nil {
-		return Object{}, err
+		return objectImpl{}, err
 	}
 	if len(objects) > 1 {
-		return Object{}, ErrTooManyObjectsFound
+		return objectImpl{}, ErrTooManyObjectsFound
 	}
 	return objects[0], nil
 }
@@ -123,7 +123,7 @@ func (s *sessionImpl) FindObjects(template []*pkcs11.Attribute) ([]Object, error
 		i := len(results)
 		results = append(results, make([]Object, len(objectHandles))...)
 		for j, objectHandle := range objectHandles {
-			results[i+j] = Object{
+			results[i+j] = objectImpl{
 				session:      s,
 				objectHandle: objectHandle,
 			}
@@ -174,9 +174,9 @@ func (s *sessionImpl) CreateObject(template []*pkcs11.Attribute) (Object, error)
 	defer s.Unlock()
 	oh, err := s.ctx.CreateObject(s.handle, template)
 	if err != nil {
-		return Object{}, err
+		return objectImpl{}, err
 	}
-	return Object{
+	return objectImpl{
 		session:      s,
 		objectHandle: oh,
 	}, nil
