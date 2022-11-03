@@ -51,7 +51,7 @@
 //   if err != nil {
 //     return err
 //   }
-//   privateKey := p11.PrivateKey(privateKeyObject)
+//   privateKey := privateKeyObject.PrivateKey()
 //   signature, err := privateKey.Sign(..., []byte{"hello"})
 //   if err != nil {
 //     return err

@@ -2,16 +2,16 @@ package p11
 
 import "github.com/miekg/pkcs11"
 
-// PublicKey is an Object representing a public key. Since any object can be cast to a
-// PublicKey, it is the user's responsibility to ensure that the object is
-// actually a public key. For instance, if you use a FindObjects template that
-// includes CKA_CLASS: CKO_PUBLIC_KEY, you can be confident the resulting object
-// is a public key.
+// PublicKey is an Object representing a public key. Since the PublicKey method
+// can be called on any object, it is the user's responsibility to ensure that
+// the object is actually a public key. For instance, if you use a FindObjects
+// template that includes CKA_CLASS: CKO_PUBLIC_KEY, you can be confident the
+// resulting object is a public key.
 type PublicKey Object
 
-// PrivateKey is an Object representing a private key. Since any object can be cast to a
-// PrivateKey, it is the user's responsibility to ensure that the object is
-// actually a private key.
+// PrivateKey is an Object representing a private key. Since the PrivateKey
+// method can be called on any object, it is the user's responsibility to
+// ensure that the object is actually a private key.
 type PrivateKey Object
 
 // Decrypt decrypts the input with a given mechanism.

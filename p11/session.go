@@ -65,25 +65,25 @@ type sessionImpl struct {
 func (s *sessionImpl) FindPrivateKey(label string) (PrivateKey, error) {
 	obj, err := s.findObjectWithClassAndLabel(pkcs11.CKO_PRIVATE_KEY, label)
 	if err != nil {
-		return PrivateKey(obj), err
+		return obj.PrivateKey(), err
 	}
-	return PrivateKey(obj), nil
+	return obj.PrivateKey(), nil
 }
 
 func (s *sessionImpl) FindPublicKey(label string) (PublicKey, error) {
 	obj, err := s.findObjectWithClassAndLabel(pkcs11.CKO_PUBLIC_KEY, label)
 	if err != nil {
-		return PublicKey(obj), err
+		return obj.PublicKey(), err
 	}
-	return PublicKey(obj), nil
+	return obj.PublicKey(), nil
 }
 
 func (s *sessionImpl) FindSecretKey(label string) (SecretKey, error) {
 	obj, err := s.findObjectWithClassAndLabel(pkcs11.CKO_SECRET_KEY, label)
 	if err != nil {
-		return SecretKey(obj), err
+		return obj.SecretKey(), err
 	}
-	return SecretKey(obj), nil
+	return obj.SecretKey(), nil
 }
 
 func (s *sessionImpl) findObjectWithClassAndLabel(class uint, label string) (Object, error) {
@@ -219,14 +219,17 @@ func (s *sessionImpl) GenerateKeyPair(request GenerateKeyPairRequest) (*KeyPair,
 	if err != nil {
 		return nil, err
 	}
+
+	pubObj := Object{
+		session:      s,
+		objectHandle: pubHandle,
+	}
+	privObj := Object{
+		session:      s,
+		objectHandle: privHandle,
+	}
 	return &KeyPair{
-		Public: PublicKey(Object{
-			session:      s,
-			objectHandle: pubHandle,
-		}),
-		Private: PrivateKey(Object{
-			session:      s,
-			objectHandle: privHandle,
-		}),
+		Public: pubObj.PublicKey(),
+		Private: privObj.PrivateKey(),
 	}, nil
 }

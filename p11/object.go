@@ -100,3 +100,18 @@ func (o Object) Destroy() error {
 	defer s.Unlock()
 	return s.ctx.DestroyObject(s.handle, o.objectHandle)
 }
+
+// PrivateKey returns this object as a PrivateKey.
+func (o Object) PrivateKey() PrivateKey {
+	return PrivateKey(o)
+}
+
+// PublicKey returns this object as a PublicKey.
+func (o Object) PublicKey() PublicKey {
+	return PublicKey(o)
+}
+
+// SecretKey returns this object as a SecretKey.
+func (o Object) SecretKey() SecretKey {
+	return SecretKey(o)
+}

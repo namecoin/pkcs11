@@ -2,11 +2,11 @@ package p11
 
 import "github.com/miekg/pkcs11"
 
-// SecretKey is an Object representing a secret (symmetric) key. Since any object can be cast to a
-// SecretKey, it is the user's responsibility to ensure that the object is
-// actually a secret key. For instance, if you use a FindObjects template that
-// includes CKA_CLASS: CKO_SECRET_KEY, you can be confident the resulting object
-// is a secret key.
+// SecretKey is an Object representing a secret (symmetric) key. Since the
+// SecretKey method can be called on any object, it is the user's
+// responsibility to ensure that the object is actually a secret key. For
+// instance, if you use a FindObjects template that includes CKA_CLASS:
+// CKO_SECRET_KEY, you can be confident the resulting object is a secret key.
 type SecretKey Object
 
 // Encrypt encrypts a plaintext with a given mechanism.
