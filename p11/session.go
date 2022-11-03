@@ -220,11 +220,11 @@ func (s *sessionImpl) GenerateKeyPair(request GenerateKeyPairRequest) (*KeyPair,
 		return nil, err
 	}
 
-	pubObj := Object{
+	pubObj := objectImpl{
 		session:      s,
 		objectHandle: pubHandle,
 	}
-	privObj := Object{
+	privObj := objectImpl{
 		session:      s,
 		objectHandle: privHandle,
 	}
