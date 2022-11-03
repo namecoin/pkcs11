@@ -21,14 +21,14 @@ type PrivateKey interface {
 	Derive(mechanism pkcs11.Mechanism, attributes []*pkcs11.Attribute) ([]byte, error)
 }
 
-// PublicKey is an Object representing a public key. Since the PublicKey method
-// can be called on any object, it is the user's responsibility to ensure that
-// the object is actually a public key. For instance, if you use a FindObjects
-// template that includes CKA_CLASS: CKO_PUBLIC_KEY, you can be confident the
-// resulting object is a public key.
+// publicKeyImpl is an Object representing a public key. Since the PublicKey
+// method can be called on any object, it is the user's responsibility to
+// ensure that the object is actually a public key. For instance, if you use a
+// FindObjects template that includes CKA_CLASS: CKO_PUBLIC_KEY, you can be
+// confident the resulting object is a public key.
 type publicKeyImpl objectImpl
 
-// PrivateKey is an Object representing a private key. Since the PrivateKey
+// privateKeyImpl is an Object representing a private key. Since the PrivateKey
 // method can be called on any object, it is the user's responsibility to
 // ensure that the object is actually a private key.
 type privateKeyImpl objectImpl
