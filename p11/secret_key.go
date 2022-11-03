@@ -40,3 +40,8 @@ func (secret SecretKey) Decrypt(mechanism pkcs11.Mechanism, ciphertext []byte) (
 	}
 	return out, nil
 }
+
+// Object returns the underlying object of this key.
+func (secret SecretKey) Object() Object {
+	return Object(secret)
+}

@@ -77,6 +77,11 @@ func (priv PrivateKey) Derive(mechanism pkcs11.Mechanism, attributes []*pkcs11.A
 	return sharedSecret, nil
 }
 
+// Object returns the underlying object of this key.
+func (priv PrivateKey) Object() Object {
+	return Object(priv)
+}
+
 // Verify verifies a signature over a message with a given mechanism.
 func (pub PublicKey) Verify(mechanism pkcs11.Mechanism, message, signature []byte) error {
 	s := pub.session
@@ -107,4 +112,9 @@ func (pub PublicKey) Encrypt(mechanism pkcs11.Mechanism, plaintext []byte) ([]by
 		return nil, err
 	}
 	return out, nil
+}
+
+// Object returns the underlying object of this key.
+func (pub PublicKey) Object() Object {
+	return Object(pub)
 }
