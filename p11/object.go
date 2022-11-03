@@ -16,13 +16,26 @@ var ErrTooManyAttributesFound = errors.New("too many attributes found")
 // session used to find it. Once that session is closed, operations on the
 // Object will fail. Operations may also depend on the logged-in state of
 // the application.
-type Object struct {
+type Object interface {
+	Attribute(attributeType uint) ([]byte, error)
+	Copy(template []*pkcs11.Attribute) (Object, error)
+	Destroy() error
+	Label() (string, error)
+	Set(attributeType uint, value []byte) error
+	Value() ([]byte, error)
+}
+
+// objectImpl represents a handle to a PKCS#11 object. It is attached to the
+// session used to find it. Once that session is closed, operations on the
+// Object will fail. Operations may also depend on the logged-in state of
+// the application.
+type objectImpl struct {
 	session      *sessionImpl
 	objectHandle pkcs11.ObjectHandle
 }
 
 // Label returns the label of an object.
-func (o Object) Label() (string, error) {
+func (o objectImpl) Label() (string, error) {
 	labelBytes, err := o.Attribute(pkcs11.CKA_LABEL)
 	if err != nil {
 		return "", err
@@ -31,7 +44,7 @@ func (o Object) Label() (string, error) {
 }
 
 // Value returns an object's CKA_VALUE attribute, as bytes.
-func (o Object) Value() ([]byte, error) {
+func (o objectImpl) Value() ([]byte, error) {
 	return o.Attribute(pkcs11.CKA_VALUE)
 }
 
@@ -40,7 +53,7 @@ func (o Object) Value() ([]byte, error) {
 // returned. On success, it will return the value of that attribute as a slice
 // of bytes. For attributes not present (i.e. CKR_ATTRIBUTE_TYPE_INVALID),
 // Attribute returns a nil slice and nil error.
-func (o Object) Attribute(attributeType uint) ([]byte, error) {
+func (o objectImpl) Attribute(attributeType uint) ([]byte, error) {
 	o.session.Lock()
 	defer o.session.Unlock()
 
@@ -65,7 +78,7 @@ func (o Object) Attribute(attributeType uint) ([]byte, error) {
 }
 
 // Set sets exactly one attribute on this object.
-func (o Object) Set(attributeType uint, value []byte) error {
+func (o objectImpl) Set(attributeType uint, value []byte) error {
 	o.session.Lock()
 	defer o.session.Unlock()
 
@@ -79,22 +92,22 @@ func (o Object) Set(attributeType uint, value []byte) error {
 
 // Copy makes a copy of this object, with the attributes in template applied on
 // top of it, if possible.
-func (o Object) Copy(template []*pkcs11.Attribute) (Object, error) {
+func (o objectImpl) Copy(template []*pkcs11.Attribute) (Object, error) {
 	s := o.session
 	s.Lock()
 	defer s.Unlock()
 	newHandle, err := s.ctx.CopyObject(s.handle, o.objectHandle, template)
 	if err != nil {
-		return Object{}, err
+		return objectImpl{}, err
 	}
-	return Object{
+	return objectImpl{
 		session:      s,
 		objectHandle: newHandle,
 	}, nil
 }
 
 // Destroy destroys this object.
-func (o Object) Destroy() error {
+func (o objectImpl) Destroy() error {
 	s := o.session
 	s.Lock()
 	defer s.Unlock()
