@@ -10,6 +10,7 @@ import "github.com/miekg/pkcs11"
 type PublicKey interface {
 	Encrypt(mechanism pkcs11.Mechanism, plaintext []byte) ([]byte, error)
 	Verify(mechanism pkcs11.Mechanism, message, signature []byte) error
+	Object() Object
 }
 
 // PrivateKey is an Object representing a private key. Since the PrivateKey
@@ -19,6 +20,7 @@ type PrivateKey interface {
 	Decrypt(mechanism pkcs11.Mechanism, ciphertext []byte) ([]byte, error)
 	Sign(mechanism pkcs11.Mechanism, message []byte) ([]byte, error)
 	Derive(mechanism pkcs11.Mechanism, attributes []*pkcs11.Attribute) ([]byte, error)
+	Object() Object
 }
 
 // publicKeyImpl is an Object representing a public key. Since the PublicKey
@@ -97,8 +99,8 @@ func (priv privateKeyImpl) Derive(mechanism pkcs11.Mechanism, attributes []*pkcs
 }
 
 // Object returns the underlying object of this key.
-func (priv PrivateKey) Object() Object {
-	return Object(priv)
+func (priv privateKeyImpl) Object() Object {
+	return objectImpl(priv)
 }
 
 // Verify verifies a signature over a message with a given mechanism.
@@ -134,6 +136,6 @@ func (pub publicKeyImpl) Encrypt(mechanism pkcs11.Mechanism, plaintext []byte) (
 }
 
 // Object returns the underlying object of this key.
-func (pub PublicKey) Object() Object {
-	return Object(pub)
+func (pub publicKeyImpl) Object() Object {
+	return objectImpl(pub)
 }

@@ -10,6 +10,7 @@ import "github.com/miekg/pkcs11"
 type SecretKey interface {
 	Decrypt(mechanism pkcs11.Mechanism, ciphertext []byte) ([]byte, error)
 	Encrypt(mechanism pkcs11.Mechanism, plaintext []byte) ([]byte, error)
+	Object() Object
 }
 
 // secretKeyImpl is an Object representing a secret (symmetric) key. Since the
@@ -52,6 +53,6 @@ func (secret secretKeyImpl) Decrypt(mechanism pkcs11.Mechanism, ciphertext []byt
 }
 
 // Object returns the underlying object of this key.
-func (secret SecretKey) Object() Object {
-	return Object(secret)
+func (secret secretKeyImpl) Object() Object {
+	return objectImpl(secret)
 }
