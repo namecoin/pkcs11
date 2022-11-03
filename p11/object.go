@@ -23,6 +23,9 @@ type Object interface {
 	Label() (string, error)
 	Set(attributeType uint, value []byte) error
 	Value() ([]byte, error)
+	PrivateKey() PrivateKey
+	PublicKey() PublicKey
+	SecretKey() SecretKey
 }
 
 // objectImpl represents a handle to a PKCS#11 object. It is attached to the
@@ -115,16 +118,16 @@ func (o objectImpl) Destroy() error {
 }
 
 // PrivateKey returns this object as a PrivateKey.
-func (o Object) PrivateKey() PrivateKey {
-	return PrivateKey(o)
+func (o objectImpl) PrivateKey() PrivateKey {
+	return privateKeyImpl(o)
 }
 
 // PublicKey returns this object as a PublicKey.
-func (o Object) PublicKey() PublicKey {
-	return PublicKey(o)
+func (o objectImpl) PublicKey() PublicKey {
+	return publicKeyImpl(o)
 }
 
 // SecretKey returns this object as a SecretKey.
-func (o Object) SecretKey() SecretKey {
-	return SecretKey(o)
+func (o objectImpl) SecretKey() SecretKey {
+	return secretKeyImpl(o)
 }
