@@ -7,12 +7,12 @@ import "github.com/miekg/pkcs11"
 // the object is actually a public key. For instance, if you use a FindObjects
 // template that includes CKA_CLASS: CKO_PUBLIC_KEY, you can be confident the
 // resulting object is a public key.
-type PublicKey Object
+type PublicKey objectImpl
 
 // PrivateKey is an Object representing a private key. Since the PrivateKey
 // method can be called on any object, it is the user's responsibility to
 // ensure that the object is actually a private key.
-type PrivateKey Object
+type PrivateKey objectImpl
 
 // Decrypt decrypts the input with a given mechanism.
 func (priv PrivateKey) Decrypt(mechanism pkcs11.Mechanism, ciphertext []byte) ([]byte, error) {
@@ -46,7 +46,7 @@ func (priv PrivateKey) Sign(mechanism pkcs11.Mechanism, message []byte) ([]byte,
 	return out, nil
 }
 
-func (priv PrivateKey) deriveInner(mechanism pkcs11.Mechanism, attributes []*pkcs11.Attribute) (*Object, error) {
+func (priv PrivateKey) deriveInner(mechanism pkcs11.Mechanism, attributes []*pkcs11.Attribute) (Object, error) {
 	s := priv.session
 	s.Lock()
 	defer s.Unlock()
@@ -55,7 +55,7 @@ func (priv PrivateKey) deriveInner(mechanism pkcs11.Mechanism, attributes []*pkc
 		return nil, err
 	}
 
-	obj := Object{
+	obj := objectImpl{
 		session:      s,
 		objectHandle: objectHandle,
 	}

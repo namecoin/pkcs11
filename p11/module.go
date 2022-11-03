@@ -123,7 +123,7 @@ func (m moduleImpl) Slots() ([]Slot, error) {
 	}
 	result := make([]Slot, len(ids))
 	for i, id := range ids {
-		result[i] = Slot{
+		result[i] = slotImpl{
 			ctx: m.ctx,
 			id:  id,
 		}
